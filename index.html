@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Little Surprise For You 💗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+:root{
+  --capyW:300px;
+  --run:.34s;
+  --text:#8a3d5e;
+  --deep:#d9668f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Baloo 2',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color:var(--text);
+  background:linear-gradient(180deg,#e7d9ff 0%,#ffd3e3 36%,#ffe2d2 60%,#fff4ea 100%);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
+}
+#stage{position:fixed;inset:0;overflow:hidden}
+
+/* ---------- Sky decorations ---------- */
+.sun{position:absolute;left:50%;top:45%;width:46vmin;height:46vmin;transform:translate(-50%,-58%);border-radius:50%;
+  background:radial-gradient(circle,#fff6dc 0,#ffe6c9 35%,rgba(255,214,200,0) 70%);z-index:0;animation:sunGlow 6s ease-in-out infinite}
+@keyframes sunGlow{50%{transform:translate(-50%,-58%) scale(1.06)}}
+.cloud{position:absolute;left:0;width:var(--w);height:calc(var(--w)*.32);background:#fff;border-radius:999px;opacity:.7;z-index:0;
+  animation:drift var(--d) linear infinite;animation-delay:var(--del)}
+.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:48%;height:150%;left:16%;bottom:22%}
+.cloud::after{width:36%;height:118%;right:15%;bottom:28%}
+@keyframes drift{from{transform:translateX(-35vw)}to{transform:translateX(125vw)}}
+
+/* ---------- Land ---------- */
+.land{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.3s ease}
+.show-world .land{opacity:1}
+.land>svg{position:absolute;inset:0;width:100%;height:100%}
+.gflower{position:absolute;transform:translate(-50%,-100%)}
+.gflower svg{display:block;width:100%;height:100%}
+
+/* ---------- Ambient floaters ---------- */
+#floaters{position:absolute;inset:0;z-index:2;pointer-events:none}
+.floater{position:absolute;top:100%;opacity:0;animation:floatUp var(--dur) linear forwards}
+.floater>div{width:100%;height:100%;animation:swayF var(--swd) ease-in-out infinite alternate}
+.floater svg,.bp svg,.twinkle svg{display:block;width:100%;height:100%}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0)}10%{opacity:var(--op)}85%{opacity:var(--op)}100%{opacity:0;transform:translateY(calc(-100vh - 160px))}}
+@keyframes swayF{from{transform:translateX(calc(var(--sw) * -1)) rotate(-14deg)}to{transform:translateX(var(--sw)) rotate(14deg)}}
+.twinkle{position:absolute;opacity:0;animation:twinkle var(--dur) ease-in-out infinite;animation-delay:var(--del)}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:.95;transform:scale(1) rotate(45deg)}}
+
+#fxBack{position:absolute;inset:0;z-index:3;pointer-events:none}
+#fxFront{position:absolute;inset:0;z-index:6;pointer-events:none}
+.bp{position:absolute;pointer-events:none}
+
+/* dust clouds */
+.dust{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 45% 40%,#fffaf6 0,#fde6da 55%,rgba(253,230,218,0) 72%);
+  animation:puff 1s ease-out forwards}
+.dust::before,.dust::after{content:'';position:absolute;border-radius:50%;background:inherit}
+.dust::before{width:75%;height:95%;left:-32%;top:18%}
+.dust::after{width:62%;height:85%;right:-28%;top:28%}
+@keyframes puff{0%{opacity:.95;transform:translate(-50%,-75%) scale(.35)}100%{opacity:0;transform:translate(-50%,-150%) scale(1.5)}}
+
+.trail-heart{position:absolute;animation:trailUp 1.4s ease-out forwards}
+@keyframes trailUp{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% - var(--dy))) scale(1) rotate(var(--rot))}}
+
+.pulse-heart{position:absolute;animation:pulseOut 1.9s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes pulseOut{0%{opacity:.95;transform:translate(-50%,-50%) scale(.15)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.4)}}
+
+#glow{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity 1s ease;
+  background:radial-gradient(circle at 50% 50%,rgba(255,190,210,0) 35%,rgba(255,150,185,.55) 100%)}
+#glow.on{opacity:1}
+#flash{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,#fff 0,#ffdbe6 55%,#ffb9cd 100%)}
+
+.kiss{position:absolute;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(0 8px 18px rgba(230,80,130,.35))}
+.kiss svg{display:block;width:100%;height:100%}
+.mwah{position:absolute;font-family:'Pacifico',cursive;color:#e0517c;font-size:calc(var(--capyW)*.09);white-space:nowrap;
+  text-shadow:0 2px 0 #fff;animation:mwah 1.3s ease-out forwards}
+@keyframes mwah{0%{opacity:0;transform:translate(-20%,0) scale(.4) rotate(-12deg)}25%{opacity:1;transform:translate(10%,-40%) scale(1.1) rotate(-6deg)}100%{opacity:0;transform:translate(40%,-160%) scale(1) rotate(4deg)}}
+
+/* ---------- Caption ---------- */
+#caption{position:absolute;left:50%;top:calc(4.5vh + env(safe-area-inset-top));z-index:7;width:min(94vw,760px);text-align:center;
+  font-weight:800;font-size:clamp(1.35rem,5.6vw,2.6rem);line-height:1.15;color:#e4497f;
+  text-shadow:0 0 2px #fff,0 2px 0 #fff,0 -2px 0 #fff,2px 0 0 #fff,-2px 0 0 #fff,0 6px 20px rgba(217,102,143,.45);
+  opacity:0;transform:translate(-50%,-24px) scale(.8);transition:opacity .6s ease,transform .7s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+#caption.show{opacity:1;transform:translate(-50%,0) scale(1)}
+#caption.big{font-family:'Pacifico',cursive;font-weight:400;font-size:clamp(2.3rem,11vw,5rem);line-height:1.3}
+#caption.big span{display:inline-block;animation:heartbeat 1.3s ease-in-out infinite}
+@keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.1)}30%{transform:scale(1)}45%{transform:scale(1.07)}}
+
+/* ---------- Replay ---------- */
+#replay{position:absolute;left:50%;top:calc(4.5vh + clamp(3.6rem,15vw,7rem));z-index:12;
+  font:800 clamp(1rem,4vw,1.2rem) 'Baloo 2',sans-serif;color:#fff;border:0;cursor:pointer;
+  padding:.55em 1.5em .45em;border-radius:999px;background:linear-gradient(135deg,#ff9fbd,#f27aa3);
+  box-shadow:0 8px 22px rgba(226,98,145,.4),inset 0 -3px 0 rgba(0,0,0,.08);
+  opacity:0;pointer-events:none;transform:translate(-50%,16px) scale(.8);transition:all .6s cubic-bezier(.3,1.6,.5,1)}
+#replay.show{opacity:1;pointer-events:auto;transform:translate(-50%,0) scale(1)}
+#replay:hover{filter:brightness(1.06)}
+
+/* ---------- Intro card ---------- */
+#intro{position:absolute;inset:0;z-index:10;display:grid;place-items:center;padding:20px;transition:opacity .9s ease,transform .9s ease}
+#intro.hide{opacity:0;transform:scale(1.14);pointer-events:none}
+#intro.instant *{transition:none!important}
+.card-wrap{perspective:1300px;animation:cardBounce 2.6s ease-in-out infinite}
+@keyframes cardBounce{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-16px) rotate(1.2deg)}}
+.card{position:relative;width:min(86vw,360px);display:grid;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;
+  transition:transform 1.25s cubic-bezier(.6,-.15,.3,1.2)}
+.card.flipped{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:30px;padding:30px 22px 28px;
+  background:linear-gradient(160deg,#fffaf3,#fff0f4 60%,#f8ecff);
+  box-shadow:0 22px 55px rgba(214,110,150,.3),inset 0 0 0 4px #fff,inset 0 0 0 8px #ffd6e2;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px}
+.back{transform:rotateY(180deg)}
+.face h1{font-size:clamp(1.3rem,5.6vw,1.65rem);line-height:1.2;font-weight:800;color:var(--text)}
+.envelope{position:relative;width:210px;height:136px;margin-top:46px;perspective:700px;cursor:pointer}
+.env-back{position:absolute;inset:0;background:#f29ab5;border-radius:14px}
+.letter{position:absolute;left:12px;right:12px;top:8px;height:116px;background:#fffdf8;border-radius:8px;z-index:1;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);display:grid;place-items:center;transition:transform .9s cubic-bezier(.3,1.5,.5,1) .35s}
+.letter svg{width:44px;height:44px}
+.letter i{position:absolute;top:14px;left:18px;right:18px;height:4px;border-radius:4px;background:#ffd6e2;font-style:normal}
+.env-pocket{position:absolute;inset:0;z-index:2;border-radius:14px;background:linear-gradient(#ffc6d5,#ffb1c7);
+  clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%)}
+.env-flap{position:absolute;left:0;right:0;top:0;height:64%;z-index:3;border-radius:14px 14px 0 0;
+  background:linear-gradient(#f9abc2,#f48fae);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;
+  transition:transform .75s ease,z-index 0s .37s}
+.envelope.open .env-flap{transform:rotateX(180deg);z-index:0}
+.envelope.open .letter{transform:translateY(-62px)}
+.seal{position:absolute;left:50%;top:62%;width:44px;height:44px;z-index:4;transform:translate(-50%,-50%);transition:transform .45s,opacity .45s;
+  filter:drop-shadow(0 3px 4px rgba(180,60,100,.3))}
+.envelope.open .seal{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(30deg)}
+#openBtn{font:800 1.15rem 'Baloo 2',sans-serif;color:#fff;border:0;cursor:pointer;padding:.6em 1.7em .5em;border-radius:999px;
+  background:linear-gradient(135deg,#ffa3c0,#f27aa3);box-shadow:0 10px 24px rgba(226,98,145,.4),inset 0 -3px 0 rgba(0,0,0,.08);
+  animation:btnPulse 1.8s ease-in-out infinite;transition:transform .2s}
+#openBtn:active{transform:scale(.95)}
+#openBtn:disabled{animation:none;opacity:.6;cursor:default}
+@keyframes btnPulse{0%,100%{box-shadow:0 10px 24px rgba(226,98,145,.4),0 0 0 0 rgba(255,150,185,.55)}50%{box-shadow:0 10px 24px rgba(226,98,145,.4),0 0 0 14px rgba(255,150,185,0)}}
+.back-heart{width:92px;height:92px;animation:heartbeat 1.2s ease-in-out infinite}
+.back-heart svg{width:100%;height:100%}
+.psst{font-family:'Pacifico',cursive;font-size:2rem;color:var(--deep);line-height:1.1}
+.back-msg{font-size:clamp(1.15rem,5vw,1.4rem);font-weight:700;line-height:1.25}
+.paws{display:flex;gap:8px;justify-content:center}
+.paws span{width:30px;height:30px;opacity:0;transform:scale(.3)}
+.paws span:nth-child(odd){margin-top:10px}
+.card.flipped .paws span{animation:pawIn .4s cubic-bezier(.3,1.7,.5,1) forwards;animation-delay:calc(var(--i) * .22s + 1s)}
+@keyframes pawIn{to{opacity:1;transform:scale(1) rotate(-8deg)}}
+
+/* ---------- Capybara ---------- */
+#capyPos{position:absolute;left:0;top:0;width:0;height:0;z-index:4;opacity:0;transition:opacity .7s ease}
+#capyPos.visible{opacity:1}
+#capy{position:absolute;left:0;top:0;width:var(--capyW);transform-origin:50% 100%;will-change:transform}
+.capy-sway,.capy-hop{transform-origin:50% 100%}
+.capy-act{position:relative;transform-origin:50% 35%;transition:transform 1s cubic-bezier(.5,0,.3,1.15)}
+#capy svg{display:block;width:100%;height:auto;overflow:visible}
+
+.bubble{position:absolute;left:50%;bottom:89%;z-index:2;background:#fff;color:#e0517c;font-weight:800;white-space:nowrap;
+  font-size:calc(var(--capyW) * .12);line-height:1;padding:.32em .75em .22em;border-radius:1em;
+  box-shadow:0 10px 24px rgba(217,102,143,.3),inset 0 0 0 3px #ffd6e2;
+  transform:translateX(-50%) scale(0) rotate(-10deg);transform-origin:50% 120%;transition:transform .55s cubic-bezier(.3,1.7,.5,1)}
+.bubble::after{content:'';position:absolute;left:58%;bottom:-.32em;width:.6em;height:.6em;background:#fff;transform:rotate(45deg);border-radius:2px;
+  box-shadow:3px 3px 0 0 #ffd6e2}
+.bubble.show{transform:translateX(-50%) scale(1) rotate(-4deg);animation:bubbleBob 1.3s ease-in-out .55s infinite}
+@keyframes bubbleBob{0%,100%{transform:translateX(-50%) scale(1) rotate(-4deg)}50%{transform:translateX(-50%) scale(1.07) rotate(3deg)}}
+
+/* SVG parts: nested in translated <g>, so local 0 0 = joint */
+.leg,.arm,.eye-o,.board,.board-wob,.ear{transform-box:view-box;transform-origin:0 0}
+.bob{transform-box:view-box;transform-origin:150px 335px}
+.arm{transition:transform .6s cubic-bezier(.34,1.45,.64,1),opacity .35s ease}
+.armL{transform:rotate(14deg)}
+.armR{transform:rotate(-14deg)}
+.eye-o{animation:blink 4.2s infinite}
+@keyframes blink{0%,91%,97%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
+.earL{animation:earWig 5s ease-in-out infinite}
+.earR{animation:earWig 5s ease-in-out 2.4s infinite}
+@keyframes earWig{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-14deg)}94%{transform:rotate(9deg)}}
+.m,.eyes-open,.eyes-happy{transition:opacity .14s}
+.m{opacity:0}
+#capy[data-mouth="smile"] .m-smile,#capy[data-mouth="open"] .m-open,#capy[data-mouth="pucker"] .m-pucker{opacity:1}
+.eyes-happy{opacity:0}
+#capy[data-eyes="happy"] .eyes-open{opacity:0}
+#capy[data-eyes="happy"] .eyes-happy{opacity:1}
+.blush{opacity:.65;transition:opacity .4s}
+#capy[data-eyes="happy"] .blush{opacity:1}
+
+/* Running cycle */
+#capy.running .legL{animation:step var(--run) ease-in-out infinite}
+#capy.running .legR{animation:step var(--run) ease-in-out infinite;animation-delay:calc(var(--run) / -2)}
+@keyframes step{0%,50%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(-20px) scale(1.14)}}
+#capy.running .bob{animation:runBob calc(var(--run) / 2) ease-in-out infinite}
+@keyframes runBob{0%,100%{transform:translateY(0) scale(1.03,.97)}50%{transform:translateY(-11px) scale(.98,1.02)}}
+#capy.running .capy-sway{animation:waddle var(--run) ease-in-out infinite}
+@keyframes waddle{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(3.5deg)}}
+#capy.running .armL{animation:swingL var(--run) ease-in-out infinite}
+#capy.running .armR{animation:swingR var(--run) ease-in-out infinite}
+@keyframes swingL{0%,100%{transform:rotate(8deg) scaleY(1)}50%{transform:rotate(42deg) scaleY(.8)}}
+@keyframes swingR{0%,100%{transform:rotate(-42deg) scaleY(.8)}50%{transform:rotate(-8deg) scaleY(1)}}
+
+#capy.idle .bob{animation:breathe 2.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.015,.988)}}
+#capy.landing .capy-hop{animation:land .65s ease-out}
+@keyframes land{0%{transform:scale(1.1,.88)}40%{transform:translateY(-6%) scale(.95,1.06)}75%{transform:scale(1.03,.97)}100%{transform:none}}
+
+/* Hello */
+#capy.wave-up .armR{transform:rotate(-150deg)}
+#capy.waving .armR{animation:wave .5s ease-in-out infinite alternate}
+@keyframes wave{from{transform:rotate(-135deg)}to{transform:rotate(-172deg)}}
+#capy.waving .capy-act{transform:rotate(-3deg)}
+
+/* Board */
+.board{transform:translateY(150px) scale(.35) rotate(-10deg);opacity:0;transition:transform 1s cubic-bezier(.3,1.45,.55,1),opacity .45s ease}
+#capy.hold .board{transform:none;opacity:1}
+#capy.hold .board-wob{animation:wob 2.6s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg) translateY(-2px)}}
+#capy.hold .arm{opacity:0}
+#capy.hold .armL{transform:rotate(-20deg)}
+#capy.hold .armR{transform:rotate(20deg)}
+
+/* Hug */
+#capy.open-arms .armL{transform:rotate(112deg)}
+#capy.open-arms .armR{transform:rotate(-112deg)}
+#capy.hug-close .armL{transform:rotate(95deg) scaleY(.72)}
+#capy.hug-close .armR{transform:rotate(-95deg) scaleY(.72)}
+#capy.squeeze .armL{animation:sqL 1.1s ease-in-out infinite}
+#capy.squeeze .armR{animation:sqR 1.1s ease-in-out infinite}
+@keyframes sqL{0%,100%{transform:rotate(95deg) scaleY(.72)}50%{transform:rotate(101deg) scaleY(.6)}}
+@keyframes sqR{0%,100%{transform:rotate(-95deg) scaleY(.72)}50%{transform:rotate(-101deg) scaleY(.6)}}
+#capy.hug-near .capy-act{transform:translateY(-8%) scale(1.75)}
+#capy.squeeze .capy-hop{animation:squish 1.1s ease-in-out infinite}
+@keyframes squish{0%,100%{transform:scale(1)}50%{transform:scale(1.045,.97)}}
+
+/* Kiss */
+#capy.step-back .capy-act{transform:translateY(2%) scale(.86)}
+#capy.kiss-prep .armR{transform:rotate(126deg)}
+#capy.kiss-prep .capy-act{transform:translateY(2%) scale(.86) rotate(-4deg)}
+#capy.kiss-throw .armR{transform:rotate(-128deg);transition-duration:.32s;transition-timing-function:cubic-bezier(.2,.8,.3,1.3)}
+#capy.kiss-throw .capy-act{transform:translateY(2%) scale(.88) rotate(3deg)}
+
+/* Final */
+#capy.happy .capy-hop{animation:happyHop 1.3s ease-in-out infinite}
+@keyframes happyHop{0%,60%,100%{transform:translateY(0) scale(1)}20%{transform:translateY(-7%) scale(.97,1.04)}40%{transform:translateY(0) scale(1.05,.95)}}
+#capy.happy .armL{animation:flapL 1.3s ease-in-out infinite}
+#capy.happy .armR{animation:flapR 1.3s ease-in-out infinite}
+@keyframes flapL{0%,60%,100%{transform:rotate(14deg)}20%{transform:rotate(60deg)}}
+@keyframes flapR{0%,60%,100%{transform:rotate(-14deg)}20%{transform:rotate(-60deg)}}
+
+@media (max-height:520px){ .envelope{margin-top:30px;transform:scale(.8)} .face{gap:10px;padding:20px 18px} }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="sun"></div>
+  <div id="clouds"></div>
+
+  <!-- Meadow (perspective ground) -->
+  <div class="land" id="land">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="gGround" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffe7dc"/><stop offset=".5" stop-color="#ffdbe0"/><stop offset="1" stop-color="#ffc9d8"/>
+        </linearGradient>
+        <linearGradient id="gRoad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff3e8" stop-opacity=".7"/><stop offset="1" stop-color="#fffaf4"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 44 C10 34 20 33 32 40 C42 31 55 30 66 39 C76 32 88 31 100 38 L100 47 L0 47Z" fill="#dccaf6"/>
+      <path d="M0 45.5 C14 39 26 39.5 38 44 C52 38 66 38 78 43 C88 39.5 95 39.5 100 41.5 L100 47 L0 47Z" fill="#f7c6d8"/>
+      <rect x="0" y="45" width="100" height="55" fill="url(#gGround)"/>
+      <polygon points="48.6,45 51.4,45 82,100 18,100" fill="url(#gRoad)"/>
+      <polyline points="48.6,45 18,100" fill="none" stroke="#fff" stroke-width=".35" opacity=".9"/>
+      <polyline points="51.4,45 82,100" fill="none" stroke="#fff" stroke-width=".35" opacity=".9"/>
+    </svg>
+    <div id="gflowers"></div>
+  </div>
+
+  <div id="floaters"></div>
+  <div id="fxBack"></div>
+
+  <!-- ================= THE CAPYBARA ================= -->
+  <div id="capyPos">
+    <div id="capy" data-mouth="smile" data-eyes="open">
+      <div class="capy-sway"><div class="capy-hop"><div class="capy-act">
+        <div class="bubble" id="bubble">HIIII!! 🥰</div>
+        <svg viewBox="0 0 300 360" role="img" aria-label="A cute cartoon capybara">
+          <defs>
+            <radialGradient id="cBody" cx="45%" cy="32%" r="78%"><stop offset="0" stop-color="#cf9a6d"/><stop offset="1" stop-color="#a46d46"/></radialGradient>
+            <radialGradient id="cHead" cx="45%" cy="32%" r="80%"><stop offset="0" stop-color="#d4a074"/><stop offset="1" stop-color="#a9724a"/></radialGradient>
+            <linearGradient id="bWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc5d5"/><stop offset="1" stop-color="#f5a0ba"/></linearGradient>
+          </defs>
+
+          <ellipse cx="150" cy="348" rx="92" ry="11" fill="#c47592" opacity=".22"/>
+
+          <!-- legs -->
+          <g transform="translate(116 298)"><g class="leg legL">
+            <rect x="-21" y="-16" width="42" height="52" rx="19" fill="#9b6844" stroke="#7a4d31" stroke-width="3"/>
+            <ellipse cx="0" cy="38" rx="26" ry="12" fill="#8b5b3a" stroke="#7a4d31" stroke-width="3"/>
+            <path d="M-9 34v6M0 33v7M9 34v6" stroke="#6b4129" stroke-width="2.4" stroke-linecap="round"/>
+          </g></g>
+          <g transform="translate(184 298)"><g class="leg legR">
+            <rect x="-21" y="-16" width="42" height="52" rx="19" fill="#9b6844" stroke="#7a4d31" stroke-width="3"/>
+            <ellipse cx="0" cy="38" rx="26" ry="12" fill="#8b5b3a" stroke="#7a4d31" stroke-width="3"/>
+            <path d="M-9 34v6M0 33v7M9 34v6" stroke="#6b4129" stroke-width="2.4" stroke-linecap="round"/>
+          </g></g>
+
+          <g class="bob">
+            <!-- body -->
+            <ellipse cx="150" cy="240" rx="98" ry="86" fill="url(#cBody)" stroke="#7a4d31" stroke-width="3"/>
+            <ellipse cx="150" cy="263" rx="60" ry="54" fill="#dcaa80" opacity=".92"/>
+            <path d="M130 238q4-6 8 0M160 246q4-6 8 0M140 284q4-6 8 0M168 280q4-6 8 0" stroke="#c48f65" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+            <!-- ears -->
+            <g transform="translate(84 64)"><g class="ear earL"><circle r="22" fill="#9b6844" stroke="#7a4d31" stroke-width="3"/><circle r="11" fill="#eda4a6"/></g></g>
+            <g transform="translate(216 64)"><g class="ear earR"><circle r="22" fill="#9b6844" stroke="#7a4d31" stroke-width="3"/><circle r="11" fill="#eda4a6"/></g></g>
+
+            <!-- head -->
+            <rect x="58" y="44" width="184" height="160" rx="68" ry="64" fill="url(#cHead)" stroke="#7a4d31" stroke-width="3"/>
+            <path d="M136 49q5-20 14-4q6-18 13 3" fill="none" stroke="#7a4d31" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- flower on head -->
+            <g transform="translate(212 60)">
+              <g fill="#ff9fc0" stroke="#f07aa3" stroke-width="1.5">
+                <circle cx="0" cy="-9" r="7.5"/><circle cx="8.6" cy="-2.8" r="7.5"/><circle cx="5.3" cy="7.3" r="7.5"/><circle cx="-5.3" cy="7.3" r="7.5"/><circle cx="-8.6" cy="-2.8" r="7.5"/>
+              </g>
+              <circle r="5.5" fill="#ffd56e"/>
+            </g>
+
+            <!-- blush -->
+            <g class="blush"><ellipse cx="86" cy="150" rx="17" ry="10" fill="#ff9db5"/><ellipse cx="214" cy="150" rx="17" ry="10" fill="#ff9db5"/></g>
+
+            <!-- eyes -->
+            <g class="eyes-open">
+              <g transform="translate(106 114)"><g class="eye-o">
+                <ellipse rx="10.5" ry="12.5" fill="#2b1a14"/><circle cx="-3.5" cy="-4.5" r="3.6" fill="#fff"/><circle cx="3.5" cy="4" r="1.6" fill="#fff"/>
+              </g></g>
+              <g transform="translate(194 114)"><g class="eye-o">
+                <ellipse rx="10.5" ry="12.5" fill="#2b1a14"/><circle cx="-3.5" cy="-4.5" r="3.6" fill="#fff"/><circle cx="3.5" cy="4" r="1.6" fill="#fff"/>
+              </g></g>
+            </g>
+            <g class="eyes-happy" fill="none" stroke="#2b1a14" stroke-width="4.5" stroke-linecap="round">
+              <path d="M94 117q12-14 24 0"/><path d="M182 117q12-14 24 0"/>
+            </g>
+
+            <!-- snout -->
+            <ellipse cx="150" cy="158" rx="56" ry="40" fill="#dba97f" stroke="#b47d55" stroke-width="1.5"/>
+            <ellipse cx="150" cy="140" rx="25" ry="13" fill="#4b2e22"/>
+            <ellipse cx="142" cy="136" rx="7" ry="3.2" fill="#fff" opacity=".55"/>
+            <ellipse cx="141" cy="143.5" rx="4" ry="2.4" fill="#26150e"/><ellipse cx="159" cy="143.5" rx="4" ry="2.4" fill="#26150e"/>
+
+            <!-- mouths -->
+            <path class="m m-smile" d="M150 153v8M134 162q8 9 16 0q8 9 16 0" fill="none" stroke="#4b2e22" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <g class="m m-open">
+              <path d="M150 153v6" stroke="#4b2e22" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M132 160Q150 196 168 160Q150 167 132 160Z" fill="#8a3049" stroke="#4b2e22" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M141 173Q150 166 159 173Q150 181 141 173Z" fill="#ff8fab"/>
+              <rect x="144" y="161" width="12" height="7" rx="2" fill="#fff"/>
+            </g>
+            <g class="m m-pucker">
+              <path d="M150 153v4" stroke="#4b2e22" stroke-width="3.5" stroke-linecap="round"/>
+              <ellipse cx="150" cy="166" rx="8" ry="9" fill="#e0517c" stroke="#4b2e22" stroke-width="2.5"/>
+              <ellipse cx="150" cy="166" rx="3" ry="4" fill="#8a3049"/>
+            </g>
+
+            <!-- arms (shoulder joints) -->
+            <g transform="translate(66 222)"><g class="arm armL">
+              <rect x="-15" y="-14" width="30" height="86" rx="15" fill="#a6714b" stroke="#7a4d31" stroke-width="3"/>
+              <ellipse cx="0" cy="72" rx="17" ry="15" fill="#94613f" stroke="#7a4d31" stroke-width="3"/>
+              <circle cx="0" cy="70" r="5" fill="#f2a6b2" opacity=".85"/>
+              <path d="M-7 80v4M0 81v4M7 80v4" stroke="#6b4129" stroke-width="2.2" stroke-linecap="round"/>
+            </g></g>
+            <g transform="translate(234 222)"><g class="arm armR">
+              <rect x="-15" y="-14" width="30" height="86" rx="15" fill="#a6714b" stroke="#7a4d31" stroke-width="3"/>
+              <ellipse cx="0" cy="72" rx="17" ry="15" fill="#94613f" stroke="#7a4d31" stroke-width="3"/>
+              <circle cx="0" cy="70" r="5" fill="#f2a6b2" opacity=".85"/>
+              <path d="M-7 80v4M0 81v4M7 80v4" stroke="#6b4129" stroke-width="2.2" stroke-linecap="round"/>
+            </g></g>
+
+            <!-- message board -->
+            <g transform="translate(150 270)"><g class="board"><g class="board-wob">
+              <rect x="-132" y="-62" width="264" height="124" rx="22" fill="url(#bWood)" stroke="#df7f9e" stroke-width="5"/>
+              <path d="M-124-34q32-6 64 0t64 0M40 52q22-5 44 0M-110 50q18-4 36 0" stroke="#f08fae" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>
+              <rect x="-120" y="-50" width="240" height="100" rx="14" fill="#ffe3eb" stroke="#f6b2c6" stroke-width="2"/>
+              <g fill="#f48fb1">
+                <path transform="translate(-126 -56) scale(.42)" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/>
+                <path transform="translate(116 -56) scale(.42)" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/>
+                <path transform="translate(-126 46) scale(.42)" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/>
+                <path transform="translate(116 46) scale(.42)" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/>
+              </g>
+              <text text-anchor="middle" font-family="'Baloo 2','Comic Sans MS','Chalkboard SE',cursive" font-weight="800" fill="#b13f69">
+                <tspan x="0" y="-20" font-size="23">Vela la pogathu,</tspan>
+                <tspan x="0" y="10" font-size="23">all is well,</tspan>
+                <tspan x="0" y="41" font-size="24">I love you 🥰🫂</tspan>
+              </text>
+              <!-- paws gripping the top edge -->
+              <g fill="#94613f" stroke="#7a4d31" stroke-width="3">
+                <ellipse cx="-84" cy="-62" rx="17" ry="14"/><ellipse cx="84" cy="-62" rx="17" ry="14"/>
+              </g>
+              <path d="M-91-55v4M-84-54v4M-77-55v4M77-55v4M84-54v4M91-55v4" stroke="#6b4129" stroke-width="2.2" stroke-linecap="round"/>
+            </g></g></g>
+          </g>
+        </svg>
+      </div></div></div>
+    </div>
+  </div>
+
+  <div id="glow"></div>
+  <div id="fxFront"></div>
+  <div id="flash"></div>
+  <div id="caption" aria-live="polite"></div>
+  <button id="replay">↻ Watch again</button>
+
+  <!-- ================= SCENE 1: CARD ================= -->
+  <section id="intro">
+    <div class="card-wrap">
+      <div class="card" id="card">
+        <div class="face front">
+          <div class="envelope" id="envelope">
+            <div class="env-back"></div>
+            <div class="letter"><i></i>
+              <svg viewBox="0 0 24 24"><path fill="#f48fb1" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+            </div>
+            <div class="env-pocket"></div>
+            <div class="env-flap"></div>
+            <svg class="seal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11.5" fill="#e25c8a"/><circle cx="12" cy="12" r="9" fill="none" stroke="#f79bbb" stroke-width="1" stroke-dasharray="2 1.5"/><path fill="#fff" transform="translate(5.4 5.6) scale(.55)" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>
+          </div>
+          <h1>Hey you! I have a little surprise for you 💗</h1>
+          <button id="openBtn">Open your card</button>
+        </div>
+        <div class="face back">
+          <div class="back-heart"><svg viewBox="0 0 24 24"><defs><linearGradient id="bh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb3c9"/><stop offset="1" stop-color="#ef6f9c"/></linearGradient></defs><path fill="url(#bh)" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/><ellipse cx="7.5" cy="8.5" rx="2" ry="1.2" fill="#fff" opacity=".6" transform="rotate(-30 7.5 8.5)"/></svg></div>
+          <p class="psst">Psst…</p>
+          <p class="back-msg">someone small &amp; fluffy is running to see you!</p>
+          <div class="paws" id="paws"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const stage = $('#stage'), capyPos = $('#capyPos'), capy = $('#capy'), floaters = $('#floaters');
+  const fxBack = $('#fxBack'), fxFront = $('#fxFront'), caption = $('#caption'), glow = $('#glow'), flash = $('#flash');
+  const intro = $('#intro'), card = $('#card'), env = $('#envelope'), openBtn = $('#openBtn'), replayBtn = $('#replay'), bubble = $('#bubble');
+
+  const HEART = 'M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.7 1.2 5.2 3 1.5-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z';
+  const SPARK = 'M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z';
+  const PASTELS = ['#ff9ebb', '#ffb3c7', '#ffc2a6', '#d9bfff', '#ffcadb', '#f59ac0', '#c9b0ff', '#ffa8b8'];
+  const SPARKC = ['#fff6c9', '#ffffff', '#ffe08a', '#ffd1e3', '#e8dbff'];
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const svgHeart = c => `<svg viewBox="0 0 24 24"><path d="${HEART}" fill="${c}"/><ellipse cx="7.6" cy="8.6" rx="1.9" ry="1.1" fill="#fff" opacity=".55" transform="rotate(-30 7.6 8.6)"/></svg>`;
+  const svgSpark = c => `<svg viewBox="0 0 24 24"><path d="${SPARK}" fill="${c}"/></svg>`;
+  const svgFlower = (p, c) => `<svg viewBox="-12 -12 24 24"><g fill="${p}"><circle cy="-5.5" r="4.4"/><circle cx="5.2" cy="-1.7" r="4.4"/><circle cx="3.2" cy="4.5" r="4.4"/><circle cx="-3.2" cy="4.5" r="4.4"/><circle cx="-5.2" cy="-1.7" r="4.4"/></g><circle r="3" fill="${c}"/></svg>`;
+  const PAW = '<svg viewBox="0 0 40 40" fill="#ea8fae"><ellipse cx="20" cy="26" rx="10" ry="8.5"/><circle cx="9" cy="15" r="4.5"/><circle cx="16" cy="8.5" r="4.5"/><circle cx="24" cy="8.5" r="4.5"/><circle cx="31" cy="15" r="4.5"/></svg>';
+
+  /* ---------- timers that must be cancelled on replay ---------- */
+  const timeouts = new Set(), intervals = new Set();
+  const later = (fn, ms) => { const t = setTimeout(() => { timeouts.delete(t); fn(); }, ms); timeouts.add(t); return t; };
+  const every = (fn, ms) => { const t = setInterval(fn, ms); intervals.add(t); return t; };
+  const stopEvery = t => { clearInterval(t); intervals.delete(t); };
+
+  /* ---------- layout & perspective ---------- */
+  let W, H, capyW, capyH, horizon, finalFoot, curZ = 12, curX = 0;
+  function layout() {
+    W = window.innerWidth; H = window.innerHeight;
+    capyH = Math.min(H * 0.56, W * 0.84 * 1.2, 520);
+    capyW = capyH / 1.2;
+    document.documentElement.style.setProperty('--capyW', capyW + 'px');
+    horizon = H * 0.45;
+    finalFoot = H * 0.955;
+    placeCapy(curZ, curX);
+  }
+  // z = distance from viewer (1 = right in front). Apparent size ∝ 1/z, ground contact point follows the perspective of the road.
+  function placeCapy(z, xOff = 0) {
+    curZ = z; curX = xOff;
+    const s = 1 / z, foot = horizon + (finalFoot - horizon) / z, x = W / 2 + xOff;
+    capyPos.style.transform = `translate(${x}px,${foot}px)`;
+    capy.style.transform = `translate(-50%,-100%) scale(${s})`;
+    return { s, foot, x };
+  }
+
+  /* ---------- static decorations ---------- */
+  function initClouds() {
+    const c = $('#clouds');
+    for (let i = 0; i < 5; i++) {
+      const d = document.createElement('div');
+      d.className = 'cloud';
+      const dur = rand(55, 95);
+      d.style.cssText = `--w:${rand(90, 190)}px;--d:${dur}s;--del:${-rand(0, dur)}s;top:${rand(6, 34)}%`;
+      c.appendChild(d);
+    }
+  }
+  function initGroundFlowers() {
+    const g = $('#gflowers');
+    let made = 0, guard = 0;
+    while (made < 34 && guard++ < 500) {
+      const y = rand(47, 99);
+      const hw = 1.4 + (y - 45) / 55 * 30.6 + 3;
+      const x = rand(1, 99);
+      if (Math.abs(x - 50) < hw) continue;
+      const depth = (y - 45) / 55;
+      const size = 5 + depth * 26;
+      const el = document.createElement('div');
+      el.className = 'gflower';
+      el.style.cssText = `left:${x}%;top:${y}%;width:${size}px;height:${size}px;opacity:${0.55 + depth * 0.45}`;
+      el.innerHTML = svgFlower(pick(['#ffb3c9', '#ffffff', '#e2cdff', '#ffc9a8']), '#ffd56e');
+      g.appendChild(el); made++;
+    }
+  }
+  function initTwinkles() {
+    for (let i = 0; i < 22; i++) {
+      const el = document.createElement('div');
+      el.className = 'twinkle';
+      const s = rand(8, 20);
+      el.style.cssText = `left:${rand(2, 98)}%;top:${rand(2, 70)}%;width:${s}px;height:${s}px;--dur:${rand(2.2, 4.5)}s;--del:${-rand(0, 4)}s`;
+      el.innerHTML = svgSpark(pick(SPARKC));
+      floaters.appendChild(el);
+    }
+  }
+  function initPaws() {
+    const p = $('#paws');
+    for (let i = 0; i < 5; i++) { const s = document.createElement('span'); s.style.setProperty('--i', i); s.innerHTML = PAW; p.appendChild(s); }
+  }
+
+  /* ---------- ambient floating hearts / flowers ---------- */
+  let rate = 1;
+  function spawnFloater() {
+    const el = document.createElement('div');
+    el.className = 'floater';
+    const r = Math.random();
+    const size = r < 0.62 ? rand(14, 34) : rand(16, 28);
+    el.style.cssText = `left:${rand(0, 100)}%;width:${size}px;height:${size}px;--dur:${rand(9, 16)}s;--op:${rand(.5, .9)};--sw:${rand(8, 28)}px;--swd:${rand(2, 3.6)}s`;
+    el.innerHTML = '<div>' + (r < 0.62 ? svgHeart(pick(PASTELS)) : svgFlower(pick(['#ffc0d3', '#fff', '#dcc6ff', '#ffd0b5']), '#ffd56e')) + '</div>';
+    floaters.appendChild(el);
+    el.addEventListener('animationend', e => { if (e.target === el) el.remove(); });
+  }
+  (function floatLoop() { if (!document.hidden) spawnFloater(); setTimeout(floatLoop, 750 / rate); })();
+
+  /* ---------- particle helpers ---------- */
+  function burst(x, y, n, o = {}) {
+    const kinds = o.kinds || ['heart'];
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('div');
+      el.className = 'bp';
+      const k = pick(kinds);
+      el.innerHTML = k === 'heart' ? svgHeart(pick(PASTELS)) : k === 'spark' ? svgSpark(pick(SPARKC)) : svgFlower(pick(['#ffc0d3', '#fff', '#dcc6ff']), '#ffd56e');
+      const size = rand(o.min || 14, o.max || 34);
+      el.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size}px;margin:${-size / 2}px 0 0 ${-size / 2}px`;
+      (o.back ? fxBack : fxFront).appendChild(el);
+      const a = o.up ? rand(-Math.PI * 0.9, -Math.PI * 0.1) : rand(0, Math.PI * 2);
+      const d = rand(o.dmin || 60, o.dmax || 240);
+      const dx = Math.cos(a) * d, dy = Math.sin(a) * d - (o.lift || 50);
+      const anim = el.animate([
+        { transform: 'translate(0,0) scale(.2) rotate(0deg)', opacity: 0 },
+        { transform: `translate(${dx * .6}px,${dy * .6}px) scale(1) rotate(${rand(-40, 40)}deg)`, opacity: 1, offset: .35 },
+        { transform: `translate(${dx}px,${dy - 40}px) scale(.8) rotate(${rand(-90, 90)}deg)`, opacity: 0 }
+      ], { duration: rand(1200, 2300), delay: rand(0, o.spread || 200), easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' });
+      anim.onfinish = () => el.remove();
+    }
+  }
+  const spark = (x, y) => burst(x, y, 1, { kinds: ['spark'], min: 8, max: 20, dmin: 8, dmax: 40, lift: 8, spread: 0 });
+
+  function spawnDust(x, y, s) {
+    const d = document.createElement('div');
+    d.className = 'dust';
+    const size = capyW * s * rand(.24, .34);
+    d.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size * .62}px`;
+    fxBack.appendChild(d);
+    d.addEventListener('animationend', () => d.remove());
+  }
+  function spawnTrailHeart(x, foot, s) {
+    const el = document.createElement('div');
+    el.className = 'trail-heart';
+    const size = 10 + 26 * s;
+    const y = foot - capyH * s * rand(.25, .75);
+    el.style.cssText = `left:${x + rand(-.45, .45) * capyW * s}px;top:${y}px;width:${size}px;height:${size}px;--dx:${rand(-60, 60) * (0.4 + s)}px;--dy:${rand(40, 110) * (0.4 + s)}px;--rot:${rand(-40, 40)}deg`;
+    el.innerHTML = svgHeart(pick(PASTELS));
+    fxBack.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+  function pulseHeart(x, y) {
+    const el = document.createElement('div');
+    el.className = 'pulse-heart';
+    const size = Math.min(W, H) * 0.6;
+    el.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size}px`;
+    el.innerHTML = `<svg viewBox="0 0 24 24" style="width:100%;height:100%"><path d="${HEART}" fill="#ff9fbd" opacity=".55" stroke="#fff" stroke-width=".5"/></svg>`;
+    fxBack.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+  function doFlash() {
+    flash.animate([{ opacity: 0 }, { opacity: .85, offset: .3 }, { opacity: 0 }], { duration: 1000, easing: 'ease-out' });
+  }
+  function showCaption(text, big = false) {
+    caption.innerHTML = `<span>${text}</span>`;
+    caption.classList.toggle('big', big);
+    caption.classList.remove('show');
+    void caption.offsetWidth;
+    caption.classList.add('show');
+  }
+  const hideCaption = () => caption.classList.remove('show');
+
+  /* ---------- Flying kiss ---------- */
+  const KISS_SVG = `<svg viewBox="0 0 100 100"><defs><radialGradient id="kg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#ffd3e0"/><stop offset=".55" stop-color="#ff7fa6"/><stop offset="1" stop-color="#e5447a"/></radialGradient></defs>
+    <path d="${HEART}" transform="translate(2 0) scale(4)" fill="url(#kg)" stroke="#fff" stroke-width=".6"/>
+    <ellipse cx="30" cy="34" rx="9" ry="5" fill="#fff" opacity=".7" transform="rotate(-32 30 34)"/>
+    <g transform="translate(50 54)"><path d="M-16 0Q-9-11 0-4Q9-11 16 0Q0 3-16 0Z" fill="#c92a5e"/><path d="M-16 0Q0 3 16 0Q8 13 0 13Q-8 13-16 0Z" fill="#d93b6f"/><ellipse cx="-5" cy="6" rx="4" ry="1.6" fill="#fff" opacity=".5"/></g></svg>`;
+  function emitKiss() {
+    const m = capy.querySelector('.m-pucker').getBoundingClientRect();
+    const sx = m.left + m.width / 2, sy = m.top + m.height / 2;
+    const mw = document.createElement('div');
+    mw.className = 'mwah'; mw.textContent = 'mwah!';
+    mw.style.cssText = `left:${sx + capyW * .12}px;top:${sy - capyW * .05}px`;
+    fxFront.appendChild(mw);
+    mw.addEventListener('animationend', () => mw.remove());
+
+    const base = Math.min(W, H) * 0.16;
+    const k = document.createElement('div');
+    k.className = 'kiss'; k.innerHTML = KISS_SVG;
+    k.style.cssText = `left:${sx - base / 2}px;top:${sy - base / 2}px;width:${base}px;height:${base}px`;
+    fxFront.appendChild(k);
+    const dx = W / 2 - sx, dy = H * 0.45 - sy;
+    const anim = k.animate([
+      { transform: 'translate(0,0) scale(.18) rotate(-12deg)', opacity: 0 },
+      { transform: `translate(${dx * .15 + base * .5}px,${dy * .15 - base * .6}px) scale(.7) rotate(10deg)`, opacity: 1, offset: .22 },
+      { transform: `translate(${dx * .6}px,${dy * .6}px) scale(1.8) rotate(-8deg)`, opacity: 1, offset: .55 },
+      { transform: `translate(${dx}px,${dy}px) scale(4.2) rotate(4deg)`, opacity: 1, offset: .8 },
+      { transform: `translate(${dx}px,${dy}px) scale(10) rotate(0deg)`, opacity: 0 }
+    ], { duration: 2300, easing: 'cubic-bezier(.45,0,.7,1)', fill: 'forwards' });
+    const trail = every(() => {
+      const r = k.getBoundingClientRect();
+      spark(r.left + r.width * rand(.15, .85), r.top + r.height * rand(.15, .85));
+    }, 70);
+    anim.onfinish = () => { stopEvery(trail); k.remove(); };
+  }
+
+  /* ---------- Scene 2: running towards the viewer ---------- */
+  function runIn(id) {
+    return new Promise((resolve, reject) => {
+      const dur = 5600;
+      let start = null, lastDust = 0, lastHeart = 0, side = 1;
+      capy.classList.add('running');
+      capy.dataset.mouth = 'open';
+      placeCapy(12, 0);
+      capyPos.classList.add('visible');
+      function frame(ts) {
+        if (id !== runId) return reject('abort');
+        if (start === null) start = ts;
+        const t = Math.min(1, (ts - start) / dur);
+        const z = 1 + 11 * Math.pow(1 - t, 1.7);               // smooth stop right in front of the viewer
+        const weave = Math.sin(t * Math.PI * 3) * W * 0.05 * (1 - t);
+        const { s, foot, x } = placeCapy(z, weave);
+        if (ts - lastDust > 125 && t < 0.97) { lastDust = ts; side *= -1; spawnDust(x + side * capyW * s * 0.18, foot, s); }
+        if (ts - lastHeart > 280 && t < 0.95) { lastHeart = ts; spawnTrailHeart(x, foot, s); }
+        if (t < 1) requestAnimationFrame(frame);
+        else { capy.classList.remove('running'); resolve(); }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  /* ---------- The whole story ---------- */
+  let runId = 0;
+  async function play() {
+    const id = ++runId;
+    const wait = ms => new Promise((res, rej) => later(() => (id === runId ? res() : rej('abort')), ms));
+    const add = (...c) => capy.classList.add(...c);
+    const rem = (...c) => capy.classList.remove(...c);
+    const mouth = m => (capy.dataset.mouth = m);
+    const eyes = e => (capy.dataset.eyes = e);
+    const svgRect = () => capy.querySelector('svg').getBoundingClientRect();
+
+    try {
+      /* Scene 1 — open the card */
+      env.classList.add('open');
+      const er = env.getBoundingClientRect();
+      burst(er.left + er.width / 2, er.top + 20, 16, { kinds: ['heart', 'spark'], dmin: 40, dmax: 170, up: true });
+      await wait(1100);
+      card.classList.add('flipped');
+      await wait(3100);
+      intro.classList.add('hide');
+      stage.classList.add('show-world');
+      await wait(1100);
+
+      /* Scene 2 — the capybara runs towards you */
+      await runIn(id);
+
+      /* Scene 3 — HIIII */
+      add('idle', 'landing'); mouth('smile');
+      burst(W / 2, finalFoot - 10, 12, { kinds: ['heart', 'spark'], back: true, dmin: 60, dmax: capyW * .9, up: true });
+      await wait(650); rem('landing');
+      mouth('open'); add('wave-up');
+      await wait(480);
+      add('waving'); bubble.classList.add('show');
+      later(() => { const b = bubble.getBoundingClientRect(); burst(b.left + b.width / 2, b.top + b.height / 2, 10, { kinds: ['heart', 'spark'], min: 10, max: 24, dmin: 40, dmax: 120 }); }, 350);
+      await wait(3000);
+      bubble.classList.remove('show'); rem('waving');
+      await wait(80); rem('wave-up'); mouth('smile');
+      await wait(900);
+
+      /* Scene 4 — the message board */
+      add('hold');
+      await wait(750);
+      const brd = capy.querySelector('.board-wob').getBoundingClientRect();
+      [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([a, b]) => burst(brd.left + brd.width * a, brd.top + brd.height * b, 5, { kinds: ['spark'], min: 10, max: 22, dmin: 20, dmax: 80 }));
+      const boardHearts = every(() => {
+        const r = capy.querySelector('.board-wob').getBoundingClientRect();
+        burst(r.left + r.width * rand(.1, .9), r.top, 1, { kinds: ['heart'], min: 10, max: 22, dmin: 30, dmax: 90, up: true, spread: 0 });
+      }, 420);
+      await wait(6000);
+      stopEvery(boardHearts);
+
+      /* Scene 5 — the big hug */
+      rem('hold');
+      await wait(950);
+      add('open-arms'); mouth('open');
+      await wait(800);
+      const hr = svgRect();
+      const hx = hr.left + hr.width / 2, hy = hr.top + hr.height * 0.3;
+      add('hug-near'); eyes('happy'); glow.classList.add('on');
+      showCaption('Sending you the biggest hug! 🫂💗');
+      [0, 650, 1300, 1950, 2600].forEach(t => later(() => pulseHeart(hx, hy), t));
+      await wait(700);
+      add('hug-close');
+      await wait(650);
+      add('squeeze');
+      burst(W / 2, H * 0.5, 30, { kinds: ['heart', 'heart', 'spark'], dmin: 120, dmax: Math.max(W, H) * 0.55, spread: 1200, min: 16, max: 40 });
+      await wait(3400);
+      rem('squeeze');
+      await wait(60); rem('hug-close');
+      await wait(300); rem('hug-near'); glow.classList.remove('on'); hideCaption(); eyes('open'); mouth('smile');
+      await wait(700); rem('open-arms');
+      await wait(800);
+
+      /* Scene 6 — flying kiss */
+      add('step-back');
+      await wait(900);
+      add('kiss-prep'); mouth('pucker'); eyes('happy');
+      await wait(1100);
+      add('kiss-throw'); emitKiss(); mouth('open'); eyes('open');
+      await wait(1950);
+      doFlash();
+      burst(W / 2, H * 0.45, 46, { kinds: ['heart', 'heart', 'spark', 'flower'], dmin: 100, dmax: Math.max(W, H) * 0.6, spread: 500, min: 14, max: 42 });
+      showCaption('I love you! ❤️', true);
+      rem('kiss-throw', 'kiss-prep', 'step-back'); mouth('smile'); eyes('happy');
+      rate = 2.8;
+      await wait(700);
+      add('happy');
+      every(() => burst(rand(W * .1, W * .9), rand(H * .1, H * .5), 1, { kinds: ['spark', 'heart'], min: 10, max: 24, dmin: 10, dmax: 60, spread: 0 }), 380);
+      await wait(900);
+      replayBtn.classList.add('show');
+    } catch (e) {
+      if (e !== 'abort') console.error(e);
+    }
+  }
+
+  function reset() {
+    runId++;
+    timeouts.forEach(clearTimeout); timeouts.clear();
+    intervals.forEach(clearInterval); intervals.clear();
+    fxBack.innerHTML = ''; fxFront.innerHTML = '';
+    capy.className = ''; capy.dataset.mouth = 'smile'; capy.dataset.eyes = 'open';
+    capyPos.classList.remove('visible');
+    placeCapy(12, 0);
+    hideCaption(); caption.classList.remove('big');
+    glow.classList.remove('on'); bubble.classList.remove('show');
+    replayBtn.classList.remove('show');
+    stage.classList.remove('show-world');
+    rate = 1;
+    intro.classList.add('instant');
+    card.classList.remove('flipped'); env.classList.remove('open');
+    void intro.offsetWidth;
+    intro.classList.remove('instant', 'hide');
+    openBtn.disabled = false;
+  }
+
+  /* ---------- init ---------- */
+  initClouds(); initGroundFlowers(); initTwinkles(); initPaws();
+  layout();
+  window.addEventListener('resize', layout);
+  const start = () => { if (openBtn.disabled) return; openBtn.disabled = true; play(); };
+  openBtn.addEventListener('click', start);
+  env.addEventListener('click', start);
+  replayBtn.addEventListener('click', reset);
+})();
+</script>
+</body>
+</html>
